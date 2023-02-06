@@ -12,12 +12,10 @@ import numpy as np
 import os
 import pickle
 import random
-import scipy
 from scipy.spatial.distance import cdist
 from sklearn.model_selection import train_test_split
 from sklearn.cluster import KMeans
 from sklearn.neighbors import KNeighborsClassifier
-from typing import Any
 
 
 class Image:
@@ -213,7 +211,7 @@ def classify_images(
 
 
 if __name__ == "__main__":
-    nwpu_path = "../NWPU-RESISC45/"
+    nwpu_path = os.path.join(os.path.dirname(__file__), "../NWPU-RESISC45/")
     image_shape = (256, 256)
     percentage_of_pixels = 0.01
     num_pixels_to_use = int(image_shape[0] * image_shape[1] * percentage_of_pixels)
