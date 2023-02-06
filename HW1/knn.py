@@ -1,15 +1,7 @@
-# load folders from ../NWPU-RESISC45/NWPU-RESISC45/
-# loop images in folder and load them
-
-# q1
-# compute histoogram for each image, first 15 classes, 40 images per class
-# compare each image against each other image in the same class
-
-# q2
-# compute color table once
-
-# q3
-#
+# q0 load all the images
+# q1 use kmeans clustering to create a color table
+# q2 compute the distances between the color table and the images
+# q3 use knn to classify the images
 
 import cv2
 from itertools import chain
