@@ -19,9 +19,6 @@ from sklearn.cluster import KMeans
 from sklearn.neighbors import KNeighborsClassifier
 from typing import Any
 
-LOAD_IMAGES = False
-COMPUTER_COLOR_TABLE = False or LOAD_IMAGES
-
 
 class Image:
     def __init__(self, path: str, label: str, rgb_iamge: cv2.Mat):
@@ -221,6 +218,9 @@ if __name__ == "__main__":
     percentage_of_pixels = 0.01
     num_pixels_to_use = int(image_shape[0] * image_shape[1] * percentage_of_pixels)
     num_clusters = 64
+
+    LOAD_IMAGES = True
+    COMPUTER_COLOR_TABLE = False or LOAD_IMAGES
 
     images = load_images(nwpu_path, from_pickle=not LOAD_IMAGES)
 
