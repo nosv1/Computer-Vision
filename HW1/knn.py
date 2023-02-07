@@ -4,6 +4,7 @@
 # q3 use knn to classify the images
 
 import cv2
+import itertools
 from itertools import chain
 from matplotlib.pylab import *
 import matplotlib.pyplot as plt
@@ -15,6 +16,7 @@ import random
 from scipy.spatial.distance import cdist
 from sklearn.model_selection import train_test_split
 from sklearn.cluster import KMeans
+from sklearn.metrics import confusion_matrix
 from sklearn.neighbors import KNeighborsClassifier
 
 
@@ -166,6 +168,7 @@ def classify_images(
     color_table: np.ndarray,
     train_test_split_percent: float = 0.8,
     n_neighbors: int = 5,
+    plot_confusion_matrix: bool = False,
 ) -> float:
     """
     Classify images using a K-nearest neighbors (KNN) algorithm.
@@ -201,6 +204,32 @@ def classify_images(
     knn_classifier = KNeighborsClassifier(n_neighbors=n_neighbors)
     knn_classifier.fit(train, train_labels)
 
+    if plot_confusion_matrix:
+        cm = confusion_matrix(test_labels, knn_classifier.predict(test))
+
+        plt.imshow(cm, interpolation="nearest", cmap=plt.cm.Blues)
+        plt.title("Confusion matrix")
+        plt.colorbar()
+        tick_marks = np.arange(len(set(labels)))
+        plt.xticks(tick_marks, set(labels), rotation=45)
+        plt.yticks(tick_marks, set(labels))
+
+        cm = cm.astype("float") / cm.sum(axis=1)[:, np.newaxis]
+        thresh = cm.max() / 2.0
+        for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+            plt.text(
+                j,
+                i,
+                f"{cm[i, j]:.2f}",
+                horizontalalignment="center",
+                color="white" if cm[i, j] > thresh else "black",
+            )
+
+        plt.tight_layout()
+        plt.ylabel("True label")
+        plt.xlabel("Predicted label")
+        plt.show()
+
     correct = 0
     predictions = knn_classifier.predict(test)
     for i, prediction in enumerate(predictions):
@@ -217,8 +246,9 @@ if __name__ == "__main__":
     num_pixels_to_use = int(image_shape[0] * image_shape[1] * percentage_of_pixels)
     num_clusters = 64
 
-    LOAD_IMAGES = True
-    COMPUTER_COLOR_TABLE = False or LOAD_IMAGES
+    LOAD_IMAGES = False
+    COMPUTE_COLOR_TABLE = False or LOAD_IMAGES
+    PLOT_CONFUSION_MATRIX = True
 
     images = load_images(nwpu_path, from_pickle=not LOAD_IMAGES)
 
@@ -226,65 +256,14 @@ if __name__ == "__main__":
         images=images,
         num_pixels=num_pixels_to_use,
         num_clusters=num_clusters,
-        from_pickle=not COMPUTER_COLOR_TABLE,
+        from_pickle=not COMPUTE_COLOR_TABLE,
     )
 
     classification_accuracy = classify_images(
-        images=chain(*images.values()), color_table=color_table
+        images=chain(*images.values()),
+        color_table=color_table,
+        plot_confusion_matrix=PLOT_CONFUSION_MATRIX,
     )
     print(f"Classification Accuracy: {classification_accuracy}")
-
-    # random_image = random.choice(random.choice(list(images.values())))
-    # # plot hist
-    # hist = get_HSV_hist(random_image, color_table)
-    # plt.bar(range(len(hist)), hist)
-    # # show imshow and plt at the same time
-    # plt.figure()
-    # plt.imshow(random_image.rgb_image)
-    # plt.show()
-
-    # image_hsvs = np.empty((0, 3))
-    # for label in images:
-    #     for image in images[label]:
-    #         random_indices = np.random.choice(
-    #             image.flattened_hsv_image.shape[0], size=255, replace=False)
-    #         random_pixels = image.flattened_hsv_image[random_indices]
-    #         image_hsvs = np.vstack((image_hsvs, random_pixels))
-
-    # print(f"Computing color table...")
-    # kmeans.fit(image_hsvs)
-    # color_table = kmeans.cluster_centers_ / 255.0
-    # color_table[color_table < 0] = 0
-    # color_frequencies = np.zeros((len(images), color_table.shape[0]))
-    # for label_index, lable in enumerate(images):
-    #     for image in images[label]:
-    #         color_labels = kmeans.predict(image.flattened_hsv_image)
-    #         for color_label in color_labels:
-    #             color_frequencies[label_index][color_label] += 1
-
-    # print(f"Plotting color histograms...")
-    # fig, axs = plt.subplots(5, 3, figsize=(15, 15))
-    # axs = axs.ravel()
-    # for label_index, label in enumerate(images):
-    #     x = range(color_table.shape[0])
-    #     axs[label_index].bar(
-    #         x, color_frequencies[label_index], color=color_table)
-    #     axs[label_index].set_xlabel('Color Index')
-    #     axs[label_index].set_ylabel('Frequency')
-    #     axs[label_index].set_title(f'Color Table for {label}')
-    # plt.tight_layout()
-    # plt.show()
-
-    # x = range(color_table.shape[0])
-    # plt.bar(x, color_frequencies, color=color_table)
-    # plt.xlabel("Color")
-    # plt.ylabel("Frequency")
-    # plt.show()
-
-    # below might be used for last question
-    # imshow(images['airplane'][0].rgb_image)
-    # x = ginput(3)
-    # print(f"Clicked {x}")
-    # show()
 
     print("DONE")
