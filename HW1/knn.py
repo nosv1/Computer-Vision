@@ -248,7 +248,8 @@ if __name__ == "__main__":
 
     LOAD_IMAGES = False
     COMPUTE_COLOR_TABLE = False or LOAD_IMAGES
-    PLOT_CONFUSION_MATRIX = True
+    PLOT_COLOR_TABLE = False
+    PLOT_KNN_CONFUSION_MATRIX = False
 
     images = load_images(nwpu_path, from_pickle=not LOAD_IMAGES)
 
@@ -259,10 +260,20 @@ if __name__ == "__main__":
         from_pickle=not COMPUTE_COLOR_TABLE,
     )
 
+    # plot color table in 3d plot
+    if PLOT_COLOR_TABLE:
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection="3d")
+        ax.scatter(color_table[:, 0], color_table[:, 1], color_table[:, 2])
+        ax.set_xlabel("Hue")
+        ax.set_ylabel("Saturation")
+        ax.set_zlabel("Value")
+        plt.show()
+
     classification_accuracy = classify_images(
         images=chain(*images.values()),
         color_table=color_table,
-        plot_confusion_matrix=PLOT_CONFUSION_MATRIX,
+        plot_confusion_matrix=PLOT_KNN_CONFUSION_MATRIX,
     )
     print(f"Classification Accuracy: {classification_accuracy}")
 
