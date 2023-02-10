@@ -204,14 +204,22 @@ def classify_images(
     knn_classifier = KNeighborsClassifier(n_neighbors=n_neighbors)
     knn_classifier.fit(train, train_labels)
 
+    correct = 0
+    predictions = knn_classifier.predict(test)
+    for i, prediction in enumerate(predictions):
+        if prediction == test_labels[i]:
+            correct += 1
+
+    accuracy = correct / len(predictions)
+
     if plot_confusion_matrix:
         cm = confusion_matrix(test_labels, knn_classifier.predict(test))
 
         plt.imshow(cm, interpolation="nearest", cmap=plt.cm.Blues)
-        plt.title("Confusion matrix")
+        plt.title(f"Confusion Matrix (K={n_neighbors}) - Accuracy: {accuracy:.2f}")
         plt.colorbar()
         tick_marks = np.arange(len(set(labels)))
-        plt.xticks(tick_marks, set(labels), rotation=45)
+        plt.xticks(tick_marks, set(labels), rotation=90)
         plt.yticks(tick_marks, set(labels))
 
         cm = cm.astype("float") / cm.sum(axis=1)[:, np.newaxis]
@@ -230,13 +238,7 @@ def classify_images(
         plt.xlabel("Predicted label")
         plt.show()
 
-    correct = 0
-    predictions = knn_classifier.predict(test)
-    for i, prediction in enumerate(predictions):
-        if prediction == test_labels[i]:
-            correct += 1
-
-    return correct / len(predictions)
+    return accuracy
 
 
 if __name__ == "__main__":
@@ -249,7 +251,7 @@ if __name__ == "__main__":
     LOAD_IMAGES = False
     COMPUTE_COLOR_TABLE = False or LOAD_IMAGES
     PLOT_COLOR_TABLE = False
-    PLOT_KNN_CONFUSION_MATRIX = False
+    PLOT_KNN_CONFUSION_MATRIX = True
 
     images = load_images(nwpu_path, from_pickle=not LOAD_IMAGES)
 
