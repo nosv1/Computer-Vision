@@ -62,7 +62,10 @@ def load_images(root, from_pickle=False) -> dict[str, list[Image]]:
 
 
 def get_color_table(
-    images: dict[str, Image], num_pixels: int, num_clusters: int, from_pickle=False
+    images: dict[str, list[Image]],
+    num_pixels: int,
+    num_clusters: int,
+    from_pickle=False,
 ) -> np.ndarray:
     """
     Computes or loads the color table for the given images.
