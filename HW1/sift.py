@@ -72,6 +72,7 @@ def sift_matches(
     The SIFT keypoint matching algorithm is used to find correspondences between keypoints in two images.
     The function first converts the input images to grayscale and then computes SIFT keypoints and descriptors for each image.
     The function then uses the brute force matcher from OpenCV to match the keypoints between the two images.
+    The function then finds the best homography between the two images using RANSAC.
     The function then returns the matched keypoints in the two images as (3, numMatches) shaped arrays and an image of the matches.
     """
     if from_existing_files:
@@ -101,7 +102,7 @@ def sift_matches(
 
     # everything below this is beyond me how it works, lot of trial and error to
     # just get it to run with no errors. The 'inliers' stuff are good points in
-    # the image, but at no point could I get the errot to be < 36 as the example
+    # the image, but at no point could I get the error to be < 36 as the example
     # code had.
     # I also didn't do any manual refinement...
 
@@ -245,8 +246,6 @@ if __name__ == "__main__":
         show_null_space=True,
         show_agreeing_points=True,
     )
-
-    # B) Show the SVD of A and what are the zero singular values ? [10 pts]
 
     plt.figure()
     plt.imshow(image_matches)
